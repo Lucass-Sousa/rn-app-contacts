@@ -49,7 +49,3 @@ Escaneie o QR Code gerado no terminal usando o aplicativo **Expo Go** (Android) 
 - `src/context`: Contextos globais (Autenticação e Lista de Contatos).
 - `src/theme`: Definições de cores e constantes do tema.
 - `src/mocks`: Dados simulados para o estado inicial.
-
-## 👤 Autor
-
-Desenvolvido por Lucas Sousa durante o treinamento FAP 2026.1.
