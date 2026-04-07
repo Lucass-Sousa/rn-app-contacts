@@ -8,7 +8,6 @@ import { useState, useMemo } from "react";
 
 import styles from "./styles";
 import colors from "@/theme";
-import { SearchBar } from "@/components/SearchBar";
 import { Contact } from "@/mocks/contacts";
 import { useBottomSheet, useBottomSheetStack } from "@/components/bottom-sheet-stack";
 import { BottomSheet } from "@/components/bottom-sheet";
@@ -212,7 +211,6 @@ export default function Index() {
             <Ionicons name="log-out-outline" size={24} color={colors.dark.text} />
           </TouchableOpacity>
         </View>
-        <SearchBar />
       </View>
       
       <View style={styles.content}>
