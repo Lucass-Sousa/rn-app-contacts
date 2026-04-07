@@ -15,7 +15,6 @@ import { BottomSheet } from "@/components/bottom-sheet";
 import { useAuth } from "@/context/auth";
 import { useContacts } from "@/context/contacts";
 
-// Componente de formulário separado para gerenciar seu próprio estado
 const ContactForm = ({ contact, onSave }: { contact?: Contact, onSave: (data: Partial<Contact>) => void }) => {
   const [name, setName] = useState(contact?.name || "");
   const [phone, setPhone] = useState(contact?.phone || "");
@@ -82,7 +81,6 @@ const ContactForm = ({ contact, onSave }: { contact?: Contact, onSave: (data: Pa
   );
 };
 
-// Componente do Menu do Contato para ser reativo ao Contexto
 const ContactMenu = ({ contactId, onEdit, onDelete, onCall }: { contactId: string, onEdit: (c: Contact) => void, onDelete: (id: string) => void, onCall: (id: string) => void }) => {
   const { getContact } = useContacts();
   const contact = getContact(contactId);
@@ -164,7 +162,6 @@ export default function Index() {
       };
       addContact(newContact);
     }
-    // Dismiss apenas o formulário (volta para o menu)
     dismiss();
   };
 
@@ -180,7 +177,6 @@ export default function Index() {
   };
 
   const startCall = (id: string) => {
-    // Fecha ABSOLUTAMENTE TUDO antes de ir para a ligação
     popToRoot(); 
     
     setTimeout(() => {
