@@ -5,11 +5,11 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 
 import styles from "./styles";
-import colors from "../../../theme";
+import colors from "@/theme";
 import { SearchBar } from "@/components/SearchBar";
-import { CONTACTS_MOCK, Contact } from "../../mocks/contacts";
-import { useBottomSheet } from "../../components/bottom-sheet-stack";
-import { BottomSheet } from "../../components/bottom-sheet";
+import { CONTACTS_MOCK, Contact } from "@/mocks/contacts";
+import { useBottomSheet } from "@/components/bottom-sheet-stack";
+import { BottomSheet } from "@/components/bottom-sheet";
 import { useAuth } from "@/context/auth";
 
 export default function Index() {
