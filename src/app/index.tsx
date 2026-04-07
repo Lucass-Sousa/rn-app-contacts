@@ -1,10 +1,11 @@
 import { Text, View, StyleSheet } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Index() {
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Text>Aqui é loucura viu!</Text>
-    </View>
+    </SafeAreaView>
   );
 }
 
