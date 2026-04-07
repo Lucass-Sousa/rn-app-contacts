@@ -4,15 +4,16 @@ import { Image } from "expo-image";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import * as ImagePicker from "expo-image-picker";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 
 import styles from "./styles";
 import colors from "@/theme";
 import { SearchBar } from "@/components/SearchBar";
-import { CONTACTS_MOCK, Contact } from "@/mocks/contacts";
-import { useBottomSheet } from "@/components/bottom-sheet-stack";
+import { Contact } from "@/mocks/contacts";
+import { useBottomSheet, useBottomSheetStack } from "@/components/bottom-sheet-stack";
 import { BottomSheet } from "@/components/bottom-sheet";
 import { useAuth } from "@/context/auth";
+import { useContacts } from "@/context/contacts";
 
 // Componente de formulário separado para gerenciar seu próprio estado
 const ContactForm = ({ contact, onSave }: { contact?: Contact, onSave: (data: Partial<Contact>) => void }) => {
@@ -81,16 +82,59 @@ const ContactForm = ({ contact, onSave }: { contact?: Contact, onSave: (data: Pa
   );
 };
 
+// Componente do Menu do Contato para ser reativo ao Contexto
+const ContactMenu = ({ contactId, onEdit, onDelete, onCall }: { contactId: string, onEdit: (c: Contact) => void, onDelete: (id: string) => void, onCall: (id: string) => void }) => {
+  const { getContact } = useContacts();
+  const contact = getContact(contactId);
+
+  if (!contact) return null;
+
+  return (
+    <View style={styles.sheetContent}>
+      <View style={styles.sheetHeader}>
+        <Image 
+          source={contact.photo}
+          style={styles.sheetAvatar}
+          contentFit="cover"
+        />
+        <Text style={styles.sheetTitle}>{contact.name}</Text>
+        <Text style={styles.sheetPhone}>{contact.phone}</Text>
+      </View>
+
+      <View style={styles.sheetMenu}>
+        <TouchableOpacity style={styles.menuItem} onPress={() => onEdit(contact)}>
+          <Ionicons name="pencil-outline" size={24} color={colors.dark.text} />
+          <Text style={styles.menuItemText}>Editar Contato</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.menuItem} onPress={() => onDelete(contact.id)}>
+          <Ionicons name="trash-outline" size={24} color="#FF453A" />
+          <Text style={[styles.menuItemText, { color: '#FF453A' }]}>Excluir Contato</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity 
+          style={styles.callButton} 
+          onPress={() => onCall(contact.id)}
+        >
+          <Ionicons name="call" size={24} color="white" />
+          <Text style={styles.callButtonText}>Iniciar Ligação</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+};
+
 export default function Index() {
   const { present, dismiss } = useBottomSheet();
+  const { popToRoot } = useBottomSheetStack();
   const { signOut } = useAuth();
+  const { contacts, addContact, updateContact, deleteContact } = useContacts();
   const router = useRouter();
-  const [contacts, setContacts] = useState<Contact[]>(CONTACTS_MOCK);
 
   const handleDeleteContact = (id: string) => {
     const performDelete = () => {
-      setContacts(prev => prev.filter(c => c.id !== id));
-      dismiss();
+      deleteContact(id);
+      popToRoot();
     };
 
     if (Platform.OS === "web") {
@@ -110,18 +154,17 @@ export default function Index() {
 
   const handleSaveContact = (contact: Partial<Contact>) => {
     if (contact.id) {
-      // Edit
-      setContacts(prev => prev.map(c => c.id === contact.id ? { ...c, ...contact } as Contact : c));
+      updateContact(contact.id, contact);
     } else {
-      // Create
       const newContact: Contact = {
         id: Date.now().toString(),
         name: contact.name || "Novo Contato",
         phone: contact.phone || "",
         photo: contact.photo || "https://images.unsplash.com/photo-1549488344-1f9b8d2bd1f3?q=80&w=200",
       };
-      setContacts(prev => [newContact, ...prev]);
+      addContact(newContact);
     }
+    // Dismiss apenas o formulário (volta para o menu)
     dismiss();
   };
 
@@ -136,49 +179,30 @@ export default function Index() {
     );
   };
 
+  const startCall = (id: string) => {
+    // Fecha ABSOLUTAMENTE TUDO antes de ir para a ligação
+    popToRoot(); 
+    
+    setTimeout(() => {
+      router.push({
+        pathname: "/protected/call/callScreen",
+        params: { id }
+      });
+    }, 100);
+  };
+
   const handleContactPress = (contact: Contact) => {
     present(
       <BottomSheet 
         snapPoints={["55%"]} 
         backgroundColor={colors.dark.background}
       >
-        <View style={styles.sheetContent}>
-          <View style={styles.sheetHeader}>
-            <Image 
-              source={contact.photo}
-              style={styles.sheetAvatar}
-              contentFit="cover"
-            />
-            <Text style={styles.sheetTitle}>{contact.name}</Text>
-            <Text style={styles.sheetPhone}>{contact.phone}</Text>
-          </View>
-
-          <View style={styles.sheetMenu}>
-            <TouchableOpacity style={styles.menuItem} onPress={() => openForm(contact)}>
-              <Ionicons name="pencil-outline" size={24} color={colors.dark.text} />
-              <Text style={styles.menuItemText}>Editar Contato</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.menuItem} onPress={() => handleDeleteContact(contact.id)}>
-              <Ionicons name="trash-outline" size={24} color="#FF453A" />
-              <Text style={[styles.menuItemText, { color: '#FF453A' }]}>Excluir Contato</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity 
-              style={styles.callButton} 
-              onPress={() => { 
-                dismiss(); 
-                router.push({
-                   pathname: "/protected/call/callScreen",
-                   params: { id: contact.id }
-                });
-              }}
-            >
-              <Ionicons name="call" size={24} color="white" />
-              <Text style={styles.callButtonText}>Iniciar Ligação</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
+        <ContactMenu 
+          contactId={contact.id} 
+          onEdit={openForm} 
+          onDelete={handleDeleteContact} 
+          onCall={startCall}
+        />
       </BottomSheet>
     );
   };

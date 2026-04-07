@@ -5,15 +5,16 @@ import { Image } from "expo-image";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { BlurView } from "expo-blur";
-import { CONTACTS_MOCK } from "@/mocks/contacts";
+import { useContacts } from "@/context/contacts";
 import styles from "./styles";
 
 export default function CallSimulation() {
   const { id } = useLocalSearchParams();
+  const { getContact } = useContacts();
   const router = useRouter();
   const [timer, setTimer] = useState(0);
 
-  const contact = CONTACTS_MOCK.find((c) => c.id === id);
+  const contact = getContact(id as string);
 
   useEffect(() => {
     const interval = setInterval(() => {
