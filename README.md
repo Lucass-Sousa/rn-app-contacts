@@ -1,56 +1,55 @@
-# Welcome to your Expo app 👋
+# Contact Manager Pro 👋
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Um aplicativo mobile moderno para gerenciamento de contatos desenvolvido com **React Native** e **Expo**.
 
-## Get started
+## 📱 Funcionalidades
 
-1. Install dependencies
+- **Autenticação Segura**: Fluxo de login protegido com gerenciamento de estado global.
+- **Gerenciamento de Contatos (CRUD)**:
+  - Adicionar novos contatos com nome, telefone e foto.
+  - Editar informações de contatos existentes.
+  - Excluir contatos com confirmação de segurança.
+- **Seleção de Fotos**: Integração com a galeria do dispositivo para personalizar avatares de contatos.
+- **Simulação de Chamada**: Tela dedicada para simular uma ligação ativa com timer e interface premium.
+- **Design Moderno**: Tema escuro (Dark Mode) com glassmorphism, micro-animações e componentes personalizados (Bottom Sheets).
+- **Sincronização em Tempo Real**: Uso de Context API para garantir que as alterações sejam refletidas instantaneamente em todas as telas.
 
-   ```bash
-   npm install
-   ```
+## 🚀 Tecnologias Utilizadas
 
-2. Start the app
+- [Expo](https://expo.dev) - Framework para desenvolvimento universal.
+- [React Native](https://reactnative.dev) - Biblioteca para interfaces nativas.
+- [Expo Router](https://docs.expo.dev/router/introduction/) - Navegação baseada em arquivos.
+- [React Native Reanimated](https://docs.swmansion.com/react-native-reanimated/) - Animações fluidas de 60fps.
+- [Expo Image Picker](https://docs.expo.dev/versions/latest/sdk/image-picker/) - Seleção de mídia.
+- [Context API](https://react.dev/reference/react/useContext) - Gerenciamento de estado global (Auth e Contatos).
 
-   ```bash
-   npx expo start
-   ```
+## 🛠️ Como Executar
 
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+### 1. Instalar dependências
 
 ```bash
-npm run reset-project
+npm install
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+### 2. Iniciar o projeto
 
-### Other setup steps
+```bash
+npx expo start
+```
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+### 3. Abrir no dispositivo
 
-## Learn more
+Escaneie o QR Code gerado no terminal usando o aplicativo **Expo Go** (Android) ou a câmera (iOS) para visualizar o aplicativo no seu celular.
 
-To learn more about developing your project with Expo, look at the following resources:
+## 📁 Estrutura de Pastas
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+- `src/app/auth`: Telas de autenticação.
+- `src/app/protected`: Telas principais após login (Lista de contatos, Chamadas).
+- `src/components`: Componentes reutilizáveis (Bottom Sheets, etc).
+- `src/context`: Contextos globais (Autenticação e Lista de Contatos).
+- `src/theme`: Definições de cores e constantes do tema.
+- `src/mocks`: Dados simulados para o estado inicial.
 
-## Join the community
+## 👤 Autor
 
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+Desenvolvido por Lucas Sousa durante o treinamento FAP 2026.1.
