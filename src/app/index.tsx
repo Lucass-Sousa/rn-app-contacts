@@ -4,10 +4,53 @@ import { Image } from "expo-image";
 import { Ionicons } from "@expo/vector-icons";
 
 import styles from "./styles";
+import colors from "../../theme";
 import { SearchBar } from "@/components/SearchBar";
-import { CONTACTS_MOCK } from "../mocks/contacts";
+import { CONTACTS_MOCK, Contact } from "../mocks/contacts";
+import { useBottomSheet } from "../components/bottom-sheet-stack";
+import { BottomSheet } from "../components/bottom-sheet";
 
 export default function Index() {
+  const { present, dismiss } = useBottomSheet();
+
+  const handleContactPress = (contact: Contact) => {
+    present(
+      <BottomSheet 
+        snapPoints={["55%"]} 
+        backgroundColor={colors.dark.background}
+      >
+        <View style={styles.sheetContent}>
+          <View style={styles.sheetHeader}>
+            <Image 
+              source={contact.photo}
+              style={styles.sheetAvatar}
+              contentFit="cover"
+            />
+            <Text style={styles.sheetTitle}>{contact.name}</Text>
+            <Text style={styles.sheetPhone}>{contact.phone}</Text>
+          </View>
+
+          <View style={styles.sheetMenu}>
+            <TouchableOpacity style={styles.menuItem} onPress={() => { dismiss(); console.log('Edit', contact.id); }}>
+              <Ionicons name="pencil-outline" size={24} color={colors.dark.text} />
+              <Text style={styles.menuItemText}>Editar Contato</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.menuItem} onPress={() => { dismiss(); console.log('Delete', contact.id); }}>
+              <Ionicons name="trash-outline" size={24} color="#FF453A" />
+              <Text style={[styles.menuItemText, { color: '#FF453A' }]}>Excluir Contato</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.callButton} onPress={() => { dismiss(); console.log('Calling...', contact.phone); }}>
+              <Ionicons name="call" size={24} color="white" />
+              <Text style={styles.callButtonText}>Iniciar Ligação</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </BottomSheet>
+    );
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -21,7 +64,11 @@ export default function Index() {
           keyExtractor={(item) => item.id}
           contentContainerStyle={{ paddingBottom: 100 }}
           renderItem={({ item }) => (
-            <View style={styles.contactCard}>
+            <TouchableOpacity 
+              activeOpacity={0.7}
+              onPress={() => handleContactPress(item)}
+              style={styles.contactCard}
+            >
               <Image 
                 source={item.photo}
                 style={styles.avatar}
@@ -33,17 +80,7 @@ export default function Index() {
                 <Text style={styles.contactName}>{item.name}</Text>
                 <Text style={styles.contactPhone}>{item.phone}</Text>
               </View>
-
-              <View style={styles.actions}>
-                <TouchableOpacity onPress={() => console.log('Edit', item.id)}>
-                  <Ionicons name="pencil-outline" size={20} color="#8E8E93" />
-                </TouchableOpacity>
-                
-                <TouchableOpacity onPress={() => console.log('Delete', item.id)}>
-                  <Ionicons name="trash-outline" size={20} color="#FF453A" />
-                </TouchableOpacity>
-              </View>
-            </View>
+            </TouchableOpacity>
           )}
         />
       </View>

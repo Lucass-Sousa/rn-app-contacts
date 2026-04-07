@@ -74,6 +74,63 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     boxShadow: "0 8px 24px rgba(0,0,0,0.4)",
+  },
+  sheetContent: {
+    padding: 20,
+    backgroundColor: colors.dark.background,
+    gap: 16,
+  },
+  sheetHeader: {
+    alignItems: 'center',
+    marginBottom: 8,
+    gap: 8,
+  },
+  sheetAvatar: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    marginBottom: 8,
+  },
+  sheetTitle: {
+    color: colors.dark.text,
+    fontSize: 22,
+    fontWeight: '700',
+  },
+  sheetPhone: {
+    color: colors.dark.textSecondary,
+    fontSize: 16,
+    fontWeight: '400',
+  },
+  sheetMenu: {
+    gap: 12,
+  },
+  menuItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    backgroundColor: colors.dark.card,
+    borderRadius: 12,
+    gap: 12,
+  },
+  menuItemText: {
+    color: colors.dark.text,
+    fontSize: 16,
+    fontWeight: '500',
+  },
+  callButton: {
+    backgroundColor: '#34C759', // Verde iOS padrão
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 16,
+    borderRadius: 16,
+    gap: 10,
+    marginTop: 8,
+  },
+  callButtonText: {
+    color: '#FFFFFF',
+    fontSize: 18,
+    fontWeight: '700',
   }
 });
 
