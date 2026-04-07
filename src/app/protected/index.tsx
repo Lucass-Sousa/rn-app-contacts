@@ -1,8 +1,10 @@
-import { Text, View, FlatList, TouchableOpacity } from "react-native";
+import { Text, View, FlatList, TouchableOpacity, TextInput, Alert, Platform, KeyboardAvoidingView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Image } from "expo-image";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import * as ImagePicker from "expo-image-picker";
+import { useState } from "react";
 
 import styles from "./styles";
 import colors from "@/theme";
@@ -12,10 +14,127 @@ import { useBottomSheet } from "@/components/bottom-sheet-stack";
 import { BottomSheet } from "@/components/bottom-sheet";
 import { useAuth } from "@/context/auth";
 
+// Componente de formulário separado para gerenciar seu próprio estado
+const ContactForm = ({ contact, onSave }: { contact?: Contact, onSave: (data: Partial<Contact>) => void }) => {
+  const [name, setName] = useState(contact?.name || "");
+  const [phone, setPhone] = useState(contact?.phone || "");
+  const [photo, setPhoto] = useState(contact?.photo || "https://images.unsplash.com/photo-1549488344-1f9b8d2bd1f3?q=80&w=200");
+
+  const pickImage = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.8,
+    });
+
+    if (!result.canceled) {
+      setPhoto(result.assets[0].uri);
+    }
+  };
+
+  return (
+    <KeyboardAvoidingView 
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={styles.sheetContent}
+    >
+      <Text style={styles.sheetTitle}>{contact ? "Editar Contato" : "Novo Contato"}</Text>
+      
+      <TouchableOpacity 
+        style={styles.sheetAvatarContainer} 
+        onPress={pickImage}
+      >
+        <Image 
+          source={photo}
+          style={styles.sheetAvatarLarge}
+          contentFit="cover"
+        />
+        <View style={styles.sheetAvatarEditBadge}>
+          <Ionicons name="camera" size={20} color="white" />
+        </View>
+      </TouchableOpacity>
+
+      <TextInput 
+        style={styles.sheetInput} 
+        placeholder="Nome" 
+        placeholderTextColor="#888"
+        value={name}
+        onChangeText={setName}
+      />
+      
+      <TextInput 
+        style={styles.sheetInput} 
+        placeholder="Telefone (Somente Números)" 
+        placeholderTextColor="#888"
+        value={phone}
+        keyboardType="number-pad"
+        onChangeText={setPhone}
+      />
+
+      <TouchableOpacity 
+        style={styles.callButton} 
+        onPress={() => onSave({ ...contact, name, phone, photo })}
+      >
+        <Text style={styles.callButtonText}>Salvar</Text>
+      </TouchableOpacity>
+    </KeyboardAvoidingView>
+  );
+};
+
 export default function Index() {
   const { present, dismiss } = useBottomSheet();
   const { signOut } = useAuth();
   const router = useRouter();
+  const [contacts, setContacts] = useState<Contact[]>(CONTACTS_MOCK);
+
+  const handleDeleteContact = (id: string) => {
+    const performDelete = () => {
+      setContacts(prev => prev.filter(c => c.id !== id));
+      dismiss();
+    };
+
+    if (Platform.OS === "web") {
+      const confirmed = window.confirm("Tem certeza que deseja excluir este contato?");
+      if (confirmed) performDelete();
+    } else {
+      Alert.alert(
+        "Excluir Contato",
+        "Tem certeza que deseja excluir este contato?",
+        [
+          { text: "Cancelar", style: "cancel" },
+          { text: "Excluir", style: "destructive", onPress: performDelete }
+        ]
+      );
+    }
+  };
+
+  const handleSaveContact = (contact: Partial<Contact>) => {
+    if (contact.id) {
+      // Edit
+      setContacts(prev => prev.map(c => c.id === contact.id ? { ...c, ...contact } as Contact : c));
+    } else {
+      // Create
+      const newContact: Contact = {
+        id: Date.now().toString(),
+        name: contact.name || "Novo Contato",
+        phone: contact.phone || "",
+        photo: contact.photo || "https://images.unsplash.com/photo-1549488344-1f9b8d2bd1f3?q=80&w=200",
+      };
+      setContacts(prev => [newContact, ...prev]);
+    }
+    dismiss();
+  };
+
+  const openForm = (contact?: Contact) => {
+    present(
+      <BottomSheet 
+        snapPoints={["75%"]} 
+        backgroundColor={colors.dark.background}
+      >
+        <ContactForm contact={contact} onSave={handleSaveContact} />
+      </BottomSheet>
+    );
+  };
 
   const handleContactPress = (contact: Contact) => {
     present(
@@ -35,12 +154,12 @@ export default function Index() {
           </View>
 
           <View style={styles.sheetMenu}>
-            <TouchableOpacity style={styles.menuItem} onPress={() => { dismiss(); console.log('Edit', contact.id); }}>
+            <TouchableOpacity style={styles.menuItem} onPress={() => openForm(contact)}>
               <Ionicons name="pencil-outline" size={24} color={colors.dark.text} />
               <Text style={styles.menuItemText}>Editar Contato</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.menuItem} onPress={() => { dismiss(); console.log('Delete', contact.id); }}>
+            <TouchableOpacity style={styles.menuItem} onPress={() => handleDeleteContact(contact.id)}>
               <Ionicons name="trash-outline" size={24} color="#FF453A" />
               <Text style={[styles.menuItemText, { color: '#FF453A' }]}>Excluir Contato</Text>
             </TouchableOpacity>
@@ -78,7 +197,7 @@ export default function Index() {
       
       <View style={styles.content}>
         <FlatList
-          data={CONTACTS_MOCK}
+          data={contacts}
           keyExtractor={(item) => item.id}
           contentContainerStyle={{ paddingBottom: 100 }}
           renderItem={({ item }) => (
@@ -106,7 +225,7 @@ export default function Index() {
       <TouchableOpacity 
         style={styles.fab} 
         activeOpacity={0.8}
-        onPress={() => console.log('Create New Contact')}
+        onPress={() => openForm()}
       >
         <Ionicons name="add" size={32} color="white" />
       </TouchableOpacity>

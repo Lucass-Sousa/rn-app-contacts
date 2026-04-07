@@ -51,13 +51,6 @@ export default function Login() {
           <TouchableOpacity style={styles.button} onPress={handleLogin} activeOpacity={0.8}>
             <Text style={styles.buttonText}>Entrar</Text>
           </TouchableOpacity>
-
-          <View style={styles.footer}>
-            <Text style={styles.footerText}>Não tem conta?</Text>
-            <TouchableOpacity>
-              <Text style={styles.linkText}>Cadastre-se</Text>
-            </TouchableOpacity>
-          </View>
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
